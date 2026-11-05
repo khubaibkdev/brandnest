@@ -1,0 +1,35 @@
+{% set offer, bank, brand = row %}
+<tr id="offer-{{ offer.id }}">
+  <td>
+    <strong>{{ bank }}</strong>
+    <div class="muted">{{ brand or 'All brands' }}</div>
+  </td>
+  <td>
+    {% if offer.discount_pct %}{{ offer.discount_pct|round|int }}%{% else %}—{% endif %}
+    <div class="muted">{{ offer.card_types|join(', ') or 'any card' }} · {{ offer.channel }}</div>
+  </td>
+  <td class="muted">
+    {{ offer.valid_from or '—' }} → {{ offer.valid_to or '—' }}
+  </td>
+  <td>
+    {% if offer.proof_url %}
+      <a href="{{ offer.proof_url }}" target="_blank" rel="noopener">proof</a>
+    {% else %}
+      <span class="muted">no proof</span>
+    {% endif %}
+  </td>
+  <td>
+    <span class="status {{ offer.status }}">{{ offer.status }}</span>
+    {% if offer.verified_by %}<div class="muted">{{ offer.verified_by }}</div>{% endif %}
+  </td>
+  <td>
+    {% for action in desk_actions(offer.status) %}
+      <form class="inline" hx-post="/admin/offers/{{ offer.id }}/status"
+            hx-target="#offer-{{ offer.id }}" hx-swap="outerHTML">
+        <input type="hidden" name="to" value="{{ action }}">
+        <button type="submit">{{ action.replace('_', ' ') }}</button>
+      </form>
+    {% endfor %}
+    <a href="/admin/offers/{{ offer.id }}/edit"><button type="button">edit</button></a>
+  </td>
+</tr>

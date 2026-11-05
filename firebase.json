@@ -1,0 +1,12 @@
+{
+  "auth": {
+    "authorizedDomains": ["localhost"],
+    "providers": {
+      "anonymous": true,
+      "googleSignIn": {
+        "oAuthBrandDisplayName": "BrandNest",
+        "supportEmail": "kkhubaib2k24@gmail.com"
+      }
+    }
+  }
+}

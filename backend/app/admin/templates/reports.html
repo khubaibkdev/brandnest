@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Community reports{% endblock %}
+{% block content %}
+  <p class="muted">
+    Deals shoppers sent in. Accepting pays the reporter {{ report_points }} points and
+    tells them; it does not publish anything on its own — write the offer or sale
+    yourself, so a human still sets <code>verified</code>.
+  </p>
+
+  {% if rows %}
+    <table>
+      <tr><th>Screenshot</th><th>What they said</th><th>Sent</th><th>Status</th><th></th></tr>
+      {% for row in rows %}{% include "_report_row.html" %}{% endfor %}
+    </table>
+  {% else %}
+    <p class="empty">No reports waiting.</p>
+  {% endif %}
+{% endblock %}

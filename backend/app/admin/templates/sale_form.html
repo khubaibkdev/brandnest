@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit sale' if sale else 'New sale' }}{% endblock %}
+{% block content %}
+  <h2>{{ 'Edit sale event' if sale else 'New sale event' }}</h2>
+  <form method="post"
+        action="{{ '/admin/sales/%d/edit'|format(sale.id) if sale else '/admin/sales' }}">
+    <label for="brand_id">Brand</label>
+    <select id="brand_id" name="brand_id" required>
+      {% for brand in brands %}
+        <option value="{{ brand.id }}"
+          {{ 'selected' if sale and sale.brand_id == brand.id }}>{{ brand.name }}</option>
+      {% endfor %}
+    </select>
+
+    <label for="title">Title — what the shopper reads</label>
+    <input id="title" name="title" required maxlength="200" style="min-width: 520px"
+           value="{{ sale.title if sale else '' }}">
+
+    <label for="discount_text">Discount text, as the brand words it</label>
+    <input id="discount_text" name="discount_text" maxlength="200"
+           value="{{ sale.discount_text or '' if sale else '' }}">
+
+    <label for="starts_at">Starts (Pakistan time)</label>
+    <input id="starts_at" name="starts_at" type="datetime-local"
+           value="{{ local(sale.starts_at) if sale else '' }}">
+
+    <label for="ends_at">Ends (Pakistan time)</label>
+    <input id="ends_at" name="ends_at" type="datetime-local"
+           value="{{ local(sale.ends_at) if sale else '' }}">
+
+    <label for="proof_url">Proof link — the page you checked this on</label>
+    <input id="proof_url" name="proof_url" type="url" style="min-width: 520px"
+           value="{{ sale.proof_url or '' if sale else '' }}">
+
+    <div class="actions">
+      <button type="submit">Save as draft</button>
+      <span class="muted">Verifying is a separate step, and needs the proof link.</span>
+    </div>
+  </form>
+{% endblock %}

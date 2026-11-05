@@ -1,0 +1,79 @@
+# Pinned so the `pgdata` volume keeps resolving to `brand_pgdata` no matter what
+# the checkout directory is called — Compose otherwise derives it from the folder name.
+name: brand
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: brandnest
+      POSTGRES_PASSWORD: brandnest
+      POSTGRES_DB: brandnest
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U brandnest"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.11
+    environment:
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY:-brandnest-dev-key}
+      # `development` keeps the analytics ping off and the dashboard on; the
+      # VPS deploy sets `production`, where a master key becomes mandatory.
+      MEILI_ENV: development
+    ports:
+      - "7700:7700"
+    volumes:
+      - meilidata:/meili_data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:7700/health || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: ./backend
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    environment:
+      DATABASE_URL: postgresql+psycopg://brandnest:brandnest@postgres:5432/brandnest
+      # Deals desk credentials; override in .env before exposing the API (RUNBOOK §2).
+      ADMIN_USER: ${ADMIN_USER:-founder}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-brandnest}
+      MEILI_URL: http://meilisearch:7700
+      MEILI_KEY: ${MEILI_MASTER_KEY:-brandnest-dev-key}
+      # Shared links (US-21): the ngrok static domain, and the app's signing
+      # certificate(s) for Android App Links. The default is this machine's
+      # debug keystore; add the release certificate before the Play listing.
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-http://localhost:8000}
+      ANDROID_CERT_SHA256: ${ANDROID_CERT_SHA256:-["4E:36:E2:33:80:52:5F:B2:2E:C1:7E:C1:34:F2:66:1B:D6:84:2C:46:19:E1:96:88:CB:B3:C6:98:3E:8E:BA:7B"]}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/code
+      - uploads:/data/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  worker:
+    build: ./backend
+    command: python -m app.worker
+    environment:
+      DATABASE_URL: postgresql+psycopg://brandnest:brandnest@postgres:5432/brandnest
+      MEILI_URL: http://meilisearch:7700
+      MEILI_KEY: ${MEILI_MASTER_KEY:-brandnest-dev-key}
+    volumes:
+      - ./backend:/code
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  meilidata:
+  uploads:

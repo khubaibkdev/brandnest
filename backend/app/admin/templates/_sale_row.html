@@ -1,0 +1,33 @@
+{% set sale, brand = row %}
+<tr id="sale-{{ sale.id }}">
+  <td>
+    <strong>{{ brand }}</strong>
+    <div class="muted">{{ sale.title }}</div>
+  </td>
+  <td>{{ sale.discount_text or '—' }}</td>
+  <td class="muted">
+    {{ sale.starts_at.strftime('%d %b %Y %H:%M') if sale.starts_at else '—' }}
+    → {{ sale.ends_at.strftime('%d %b %Y %H:%M') if sale.ends_at else '—' }}
+  </td>
+  <td>
+    {% if sale.proof_url %}
+      <a href="{{ sale.proof_url }}" target="_blank" rel="noopener">proof</a>
+    {% else %}
+      <span class="muted">no proof</span>
+    {% endif %}
+  </td>
+  <td>
+    <span class="status {{ sale.status }}">{{ sale.status }}</span>
+    {% if sale.verified_by %}<div class="muted">{{ sale.verified_by }}</div>{% endif %}
+  </td>
+  <td>
+    {% for action in desk_actions(sale.status) %}
+      <form class="inline" hx-post="/admin/sales/{{ sale.id }}/status"
+            hx-target="#sale-{{ sale.id }}" hx-swap="outerHTML">
+        <input type="hidden" name="to" value="{{ action }}">
+        <button type="submit">{{ action.replace('_', ' ') }}</button>
+      </form>
+    {% endfor %}
+    <a href="/admin/sales/{{ sale.id }}/edit"><button type="button">edit</button></a>
+  </td>
+</tr>

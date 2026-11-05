@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Queue{% endblock %}
+{% block content %}
+  <p class="muted">
+    {{ counts.published_offers }} of {{ counts.offers }} bank offers and
+    {{ counts.published_sales }} of {{ counts.sales }} sale events are shopper-visible.
+    Nothing below is.
+  </p>
+
+  <h2>Bank offers waiting on you</h2>
+  {% if offers %}
+    <table>
+      <tr><th>Bank</th><th>Discount</th><th>Window</th><th>Proof</th><th>Status</th><th></th></tr>
+      {% for row in offers %}{% include "_offer_row.html" %}{% endfor %}
+    </table>
+  {% else %}
+    <p class="empty">Nothing pending. <a href="/admin/offers/new">Add an offer</a>.</p>
+  {% endif %}
+
+  <h2>Sale events waiting on you</h2>
+  {% if sales %}
+    <table>
+      <tr><th>Brand</th><th>Discount</th><th>Window</th><th>Proof</th><th>Status</th><th></th></tr>
+      {% for row in sales %}{% include "_sale_row.html" %}{% endfor %}
+    </table>
+  {% else %}
+    <p class="empty">Nothing pending. <a href="/admin/sales/new">Add a sale</a>.</p>
+  {% endif %}
+{% endblock %}

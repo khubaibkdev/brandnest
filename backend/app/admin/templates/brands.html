@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Brand checkout patterns{% endblock %}
+{% block content %}
+<h2>Order-confirmation patterns</h2>
+<p class="muted">
+  Regular expressions matched against the URL the shopper lands on after paying
+  (US-18). One per line. A brand changing its checkout is fixed here, not in an
+  app release. Points are awarded pending and confirm after
+  {{ hold_days }} days.
+</p>
+<table>
+  <tr><th>Brand</th><th>Platform</th><th>Patterns</th><th></th></tr>
+  {% for brand in brands %}
+  <tr>
+    <td>{{ brand.name }}<div class="muted">{{ brand.slug }}</div></td>
+    <td class="muted">{{ brand.platform }}</td>
+    <td colspan="2">
+      <form method="post" action="/admin/brands/{{ brand.id }}/order-patterns">
+        <textarea name="patterns" rows="3" style="width: 100%; font-family: monospace;"
+          >{{ brand.config.order_confirm_patterns | join('\n') }}</textarea>
+        <button type="submit">Save</button>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

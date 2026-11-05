@@ -1,0 +1,5 @@
+# The Firebase service-account key is bind-mounted at runtime, never baked into
+# the image.
+secrets/
+__pycache__/
+*.pyc

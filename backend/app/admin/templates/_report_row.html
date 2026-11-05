@@ -1,0 +1,38 @@
+{% set report = row %}
+<tr id="report-{{ report.id }}">
+  <td>
+    {% if report.screenshot_url %}
+      <a href="{{ report.screenshot_url }}" target="_blank" rel="noopener">
+        <img src="{{ report.screenshot_url }}" alt="Reported deal" class="thumb">
+      </a>
+    {% else %}
+      <span class="muted">no screenshot</span>
+    {% endif %}
+  </td>
+  <td>
+    {{ report.text or '—' }}
+    <div class="muted">reporter #{{ report.user_id }}</div>
+  </td>
+  <td class="muted">{{ report.created_at.strftime('%d %b %Y') }}</td>
+  <td>
+    <span class="status {{ report.status }}">{{ report.status }}</span>
+    {% if report.points_awarded %}
+      <div class="muted">{{ report.points_awarded }} points paid</div>
+    {% endif %}
+  </td>
+  <td>
+    {% if report.status == 'new' %}
+      {# Accepting queues nothing on its own: the desk still writes the offer or
+         sale itself, because only a human sets `verified` (ARCHITECTURE §8). #}
+      {% for action in ['accept', 'reject'] %}
+        <form class="inline" hx-post="/admin/reports/{{ report.id }}/{{ action }}"
+              hx-target="#report-{{ report.id }}" hx-swap="outerHTML">
+          <button type="submit">{{ action }}</button>
+        </form>
+      {% endfor %}
+      <a href="/admin/offers/new"><button type="button">add offer</button></a>
+    {% else %}
+      <span class="muted">decided</span>
+    {% endif %}
+  </td>
+</tr>

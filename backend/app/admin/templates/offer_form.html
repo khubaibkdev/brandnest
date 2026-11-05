@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit offer' if offer else 'New offer' }}{% endblock %}
+{% block content %}
+  <h2>{{ 'Edit bank offer' if offer else 'New bank offer' }}</h2>
+  <form method="post"
+        action="{{ '/admin/offers/%d/edit'|format(offer.id) if offer else '/admin/offers' }}">
+    <label for="bank_id">Bank</label>
+    <select id="bank_id" name="bank_id" required>
+      {% for bank in banks %}
+        <option value="{{ bank.id }}"
+          {{ 'selected' if offer and offer.bank_id == bank.id }}>{{ bank.name }}</option>
+      {% endfor %}
+    </select>
+
+    <label for="brand_id">Brand</label>
+    <select id="brand_id" name="brand_id">
+      <option value="">All brands</option>
+      {% for brand in brands %}
+        <option value="{{ brand.id }}"
+          {{ 'selected' if offer and offer.brand_id == brand.id }}>{{ brand.name }}</option>
+      {% endfor %}
+    </select>
+
+    <label>Cards</label>
+    <div class="checks">
+      {% for card in card_types %}
+        <label>
+          <input type="checkbox" name="card_types" value="{{ card }}"
+            {{ 'checked' if offer and card in offer.card_types }}> {{ card }}
+        </label>
+      {% endfor %}
+    </div>
+
+    <label for="discount_pct">Discount %</label>
+    <input id="discount_pct" name="discount_pct" type="number" step="0.01" min="0" max="100"
+           value="{{ offer.discount_pct if offer and offer.discount_pct is not none else '' }}">
+
+    <label for="max_discount_amt">Maximum discount (PKR)</label>
+    <input id="max_discount_amt" name="max_discount_amt" type="number" step="1" min="0"
+           value="{{ offer.max_discount_amt if offer and offer.max_discount_amt is not none else '' }}">
+
+    <label for="min_spend">Minimum spend (PKR)</label>
+    <input id="min_spend" name="min_spend" type="number" step="1" min="0"
+           value="{{ offer.min_spend if offer and offer.min_spend is not none else '' }}">
+
+    <label for="channel">Channel</label>
+    <select id="channel" name="channel">
+      {% for channel in channels %}
+        <option value="{{ channel }}"
+          {{ 'selected' if offer and offer.channel == channel }}>{{ channel }}</option>
+      {% endfor %}
+    </select>
+
+    <label for="valid_from">Valid from</label>
+    <input id="valid_from" name="valid_from" type="date"
+           value="{{ offer.valid_from or '' if offer else '' }}">
+
+    <label for="valid_to">Valid to</label>
+    <input id="valid_to" name="valid_to" type="date"
+           value="{{ offer.valid_to or '' if offer else '' }}">
+
+    <label for="proof_url">Proof link — the page you checked this on</label>
+    <input id="proof_url" name="proof_url" type="url" style="min-width: 520px"
+           value="{{ offer.proof_url or '' if offer else '' }}">
+
+    <div class="actions">
+      <button type="submit">Save as draft</button>
+      <span class="muted">Verifying is a separate step, and needs the proof link.</span>
+    </div>
+  </form>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+  <h2>{{ title }}{% if status %} · {{ status }}{% endif %}</h2>
+  <p>
+    <a href="/admin/{{ kind }}/new"><button type="button">New</button></a>
+    <span class="muted">
+      Filter:
+      <a href="/admin/{{ kind }}">all</a> ·
+      <a href="/admin/{{ kind }}?status=draft">draft</a> ·
+      <a href="/admin/{{ kind }}?status=verified">verified</a> ·
+      <a href="/admin/{{ kind }}?status=live">live</a> ·
+      <a href="/admin/{{ kind }}?status=expired">expired</a> ·
+      <a href="/admin/{{ kind }}?status=rejected">rejected</a>
+    </span>
+  </p>
+  {% if rows %}
+    <table>
+      <tr><th>What</th><th>Discount</th><th>Window</th><th>Proof</th><th>Status</th><th></th></tr>
+      {% for row in rows %}{% include row_template %}{% endfor %}
+    </table>
+  {% else %}
+    <p class="empty">Nothing here.</p>
+  {% endif %}
+{% endblock %}

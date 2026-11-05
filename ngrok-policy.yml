@@ -1,0 +1,10 @@
+# Only the public side of shared links goes through the tunnel (US-21).
+# Everything else on the API — /me, /admin, the catalog — stays local.
+on_http_request:
+  - expressions:
+      - "!(req.url.path.startsWith('/i/') || req.url.path == '/.well-known/assetlinks.json')"
+    actions:
+      - type: custom-response
+        config:
+          status_code: 404
+          content: "Not found"

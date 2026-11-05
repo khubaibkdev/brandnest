@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.env
+.venv/
+venv/
+.pytest_cache/
+*.egg-info/
+app/build/
+app/.dart_tool/
+.idea/
+.vscode/
+
+# Firebase secrets (US-9): never committed, fetched/generated per environment.
+backend/secrets/*.json
+app/android/app/google-services.json
