@@ -10,5 +10,3 @@ app/.dart_tool/
 .idea/
 .vscode/
 
-# Firebase admin secrets (US-9): never committed, fetched/generated per environment.
-backend/secrets/*.json
